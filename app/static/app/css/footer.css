@@ -1,0 +1,12 @@
+/*@import 'fonts-registry.css';*/
+
+.app-footer{
+    background: whitesmoke;
+    color: gray;
+    justify-content: center;
+    font-family: awesome;
+}
+
+.bg-footer {
+    background: whitesmoke;
+}
