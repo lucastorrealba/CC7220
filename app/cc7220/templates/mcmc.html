@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block canva %}
+    <div class="d-flex justify-content-center">
+        <h3> Mayores causas de muerte entre científicos</h3>
+    </div>
+    <div class="d-flex justify-content-center" id="container" style="width: 75%;">
+        <canvas id="death-chart" data-url="{% url 'cc7220:q2' %}"></canvas>
+    </div>
+{% endblock %}
+
+{% block customJS  %}
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#death-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Population',
+                                backgroundColor: ['#7FFFD4', '#6495ED', '#5F9EA0', '#2F4F4F', '#FFFAF0'],
+                                data: data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Causas de Muerte'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+{% endblock %}

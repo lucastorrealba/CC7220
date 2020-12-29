@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block canva %}
+    <div class="d-flex justify-content-center">
+        <h3> Listas de las ocupaciones consideradas científicas</h3>
+    </div>
+    <div id="table" style="width: 75%;">
+        <table>
+            <th class="header">Scientific Occupations</th>
+            {% csrf_token %}
+            {% for s in table %}
+            <tr><td class="">{{ s }}</td></tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}
+
+{% block customJS  %}
+
+{% endblock %}

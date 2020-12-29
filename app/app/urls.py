@@ -18,12 +18,17 @@ from django.conf.urls import include, url
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.urls import path
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('cc7220/', include('cc7220.urls')),
     path('', TemplateView.as_view(template_name='index.html'),
         name='home'),
+    path(
+      "favicon.ico",
+      RedirectView.as_view(url=staticfiles_storage.url("favicon.ico")),
+    ),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
