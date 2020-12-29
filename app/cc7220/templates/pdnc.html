@@ -6,7 +6,7 @@
         <h3> Scientist country of birth </h3>
     </div>
     <div id="container" style="width: 75%;">
-        <canvas id="population-chart" data-url="{% url 'cc7220:q1' %}"></canvas>
+        <canvas id="population-chart" data-url="{% url 'cc7220:q5' %}"></canvas>
     </div>
 {% endblock %}
 
@@ -28,7 +28,7 @@
                             labels: data.labels,
                             datasets: [{
                                 label: 'Population',
-                                backgroundColor: '#006400',
+                                backgroundColor: ['#ff3036','#9ddfe5','#4e4ef8','#ffffae', '#6ef96e','#ff3036','#ffacde', '#046307', '#f9d961', '#005f6a', '#465c47', '#e3cfaa','#f55b1d','#878787','#0c0528'],
                                 data: data.data
                             }]
                         },

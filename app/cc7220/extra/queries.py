@@ -31,7 +31,7 @@ class Queries:
     SELECT DISTINCT ?country (COUNT(distinct ?human) as ?number)
     WHERE {
       ?human wdt:P31 wd:Q5;
-             (wdt:P106) wd:Q901 ;
+             (wdt:P106| wdt:P279*) wd:Q901 ;
              wdt:P27 ?nationality ;
              rdfs:label ?name .
       ?nationality rdfs:label ?country .

@@ -119,8 +119,8 @@ def q5(request):
     query = Queries.get_pdnc(limit=15)
     for d in query:
         if type(d) is dict:
-            labels.append(d['subjectname']['value'])
-            data.append(d['count']['value'])
+            labels.append(d['country']['value'])
+            data.append(d['humans']['value'])
 
     return JsonResponse(data={
         'labels': labels,
