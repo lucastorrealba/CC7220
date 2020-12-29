@@ -3,14 +3,22 @@
 
 {% block canva %}
     <div class="d-flex justify-content-center">
-        <h3> Listas de las ocupaciones consideradas científicas</h3>
+        <h3> Guerras, Países y Científicos participantes</h3>
     </div>
     <div class="container" id="table" style="width: 75%;">
         <table class="table table-bordered">
-            <th class="header">Scientific Occupations</th>
+            <tr>
+                <th class="header">War</th>
+                <th class="header">Country</th>
+                <th class="header">Scientists</th>
+            </tr>
             {% csrf_token %}
             {% for s in table %}
-            <tr><td class="">{{ s }}</td></tr>
+                <tr>
+                    <td>{{ s.warname.value }}</td>
+                    <td>{{ s.countryname.value }}</td>
+                    <td>{{ s.scientists.value }}</td>
+                </tr>
             {% endfor %}
         </table>
     </div>

@@ -27,7 +27,21 @@ queries = [
         'q4/',
         views.q4,
         name='q4'
-    )
+    ),
+
+    # praises donde NACIERON los científicos
+    path(
+        'q5/',
+        views.q5,
+        name='q5'
+    ),
+
+    # científicos en guerras
+    path(
+        'q6/',
+        views.q6,
+        name='q6'
+    ),
 ]
 
 requests = [
@@ -60,6 +74,19 @@ requests = [
         views.CCCE.as_view(),
         name='ccce'
     ),
+    # países donde NACIERON los científicos
+    path(
+        'pdnc/',
+        views.PDNC.as_view(),
+        name='pdnc'
+    ),
+    # científicos en guerras
+    path(
+        'ceg/',
+        views.CEG.as_view(),
+        name='ceg'
+    ),
+
 ]
 
 urlpatterns = queries + requests

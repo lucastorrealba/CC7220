@@ -37,7 +37,7 @@ class Index(views.View):
 def q1(request):
     labels = []
     data = []
-    query = Queries.get_ccbc()
+    query = Queries.get_ccbc(limit=10)
     for d in query:
         if type(d) is dict:
             labels.append(d['country']['value'])
@@ -106,6 +106,43 @@ def q4(request):
         'data': data,
     })
 
+
 class CCCE(views.View):
     def get(self, request):
         return render(request, "ccce.html")
+
+
+# paises donde NACIERON los cientificos
+def q5(request):
+    labels = []
+    data = []
+    query = Queries.get_pdnc(limit=15)
+    for d in query:
+        if type(d) is dict:
+            labels.append(d['subjectname']['value'])
+            data.append(d['count']['value'])
+
+    return JsonResponse(data={
+        'labels': labels,
+        'data': data,
+    })
+
+
+class PDNC(views.View):
+    def get(self, request):
+        return render(request, "pdnc.html")
+
+
+# científicos en guerras
+def q6():
+    table = []
+    query = Queries.get_ceg()
+    for d in query:
+        table.append(d)
+    return table
+
+
+class CEG(views.View):
+    def get(self, request):
+        table = q6()
+        return render(request, "ceg.html", {"table": table})

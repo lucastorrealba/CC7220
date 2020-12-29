@@ -40,6 +40,7 @@ class Queries:
       }
     GROUP BY ?country
     ORDER BY DESC(?number)
+    
     """
 
     ccbc_asked = False
@@ -124,7 +125,9 @@ class Queries:
             FILTER (lang(?fieldname)="en") .
             }
             group by ?subjectname
-            order by desc(?count)"""
+            order by desc(?count)
+            
+            """
 
     ccce_asked = False
 
@@ -136,4 +139,64 @@ class Queries:
                             already_asked=Queries.ccce_asked,
                             limit=limit)
         Queries.ccce_asked = True
+        return res
+
+    #paises donde NACIERON los cientificos
+    pdnc = """
+    SELECT ?country (count(?human) as ?humans)
+    WHERE {
+    ?human wdt:P31 wd:Q5;
+    (wdt:P106|wdt:P279*) wd:Q901 ;
+    wdt:P19 ?placeOfBirth;
+    rdfs:label ?name .
+    ?placeOfBirth wdt:P17 ?c.
+    ?c rdfs:label ?country.
+        FILTER (lang(?name)="en")
+    FILTER (lang(?country)="en")
+    }
+    GROUP BY ?country
+    ORDER BY DESC(?humans)
+    
+    """
+
+    pdnc_asked = False
+
+    @staticmethod
+    def get_pdnc(limit=None):
+        res = Queries.query(query=Queries.pdnc,
+                            json_path="cc7220/templates/json/q5.json",
+                            log="pdnc retrieved" if Queries.pdnc_asked else "pdnc asked",
+                            already_asked=Queries.pdnc_asked,
+                            limit=limit)
+        Queries.pdnc_asked = True
+        return res
+
+    # científicos en guerras
+    ceg = """
+    SELECT DISTINCT ?warname ?countryname (GROUP_CONCAT (DISTINCT ?name; SEPARATOR=", ") as ?scientists)
+    WHERE {
+      ?scientist wdt:P106 wd:Q901 ;
+                 wdt:P607 ?war;
+                 wdt:P27 ?country ;
+          rdfs:label ?name .
+      ?war rdfs:label ?warname .
+      ?country rdfs:label ?countryname .
+      FILTER (lang(?name)="en") .
+      FILTER (lang(?warname)="en") .
+      FILTER (lang(?countryname)="en") .
+      }
+    GROUP BY ?warname ?countryname
+    ORDER BY ?warname
+    """
+
+    ceg_asked = False
+
+    @staticmethod
+    def get_ceg(limit=None):
+        res = Queries.query(query=Queries.ceg,
+                            json_path="cc7220/templates/json/q6.json",
+                            log="ceg retrieved" if Queries.ceg_asked else "ceg asked",
+                            already_asked=Queries.ceg_asked,
+                            limit=limit)
+        Queries.ceg_asked = True
         return res
