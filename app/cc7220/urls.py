@@ -42,6 +42,13 @@ queries = [
         views.q6,
         name='q6'
     ),
+
+    # religiones de científicos
+    path(
+        'q7/',
+        views.q7,
+        name='q7'
+    )
 ]
 
 requests = [
@@ -85,6 +92,12 @@ requests = [
         'ceg/',
         views.CEG.as_view(),
         name='ceg'
+    ),
+    # religiones de científicos
+    path(
+        'rdlc/',
+        views.RDLC.as_view(),
+        name='rdlc'
     ),
 
 ]

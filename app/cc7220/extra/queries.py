@@ -175,7 +175,7 @@ class Queries:
     ceg = """
     SELECT DISTINCT ?warname ?countryname (GROUP_CONCAT (DISTINCT ?name; SEPARATOR=", ") as ?scientists)
     WHERE {
-      ?scientist wdt:P106 wd:Q901 ;
+      ?scientist (wdt:P106|wdt:P279*) wd:Q901 ;
                  wdt:P607 ?war;
                  wdt:P27 ?country ;
           rdfs:label ?name .
@@ -199,4 +199,33 @@ class Queries:
                             already_asked=Queries.ceg_asked,
                             limit=limit)
         Queries.ceg_asked = True
+        return res
+
+    # RELIGIÓN DE LOS CIENTÍFICOS
+    rdlc = """
+    SELECT ?reg (count(?human) as ?humans)
+    WHERE {
+    ?human wdt:P31 wd:Q5;
+    (wdt:P106|wdt:P279*) wd:Q901 ;
+    wdt:P140 ?religion ;
+    rdfs:label ?name .
+    ?religion rdfs:label ?reg .
+        FILTER (lang(?name)="en")
+    FILTER (lang(?reg)="en")
+    }
+    GROUP BY ?reg
+    ORDER BY DESC(?humans)
+    
+    """
+
+    rdlc_asked = False
+
+    @staticmethod
+    def get_rdlc(limit=None):
+        res = Queries.query(query=Queries.rdlc,
+                            json_path="cc7220/templates/json/q7.json",
+                            log="rdlc retrieved" if Queries.rdlc_asked else "rdlc asked",
+                            already_asked=Queries.rdlc_asked,
+                            limit=limit)
+        Queries.rdlc_asked = True
         return res

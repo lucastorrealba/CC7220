@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block canva %}
+    <div class="d-flex justify-content-center">
+        <h3> Popular religions among scientists</h3>
+    </div>
+    <div class="d-flex justify-content-center" id="container" style="width: 75%;">
+        <canvas id="death-chart" data-url="{% url 'cc7220:q7' %}"></canvas>
+    </div>
+{% endblock %}
+
+{% block customJS  %}
+    <script>
+
+        $(function () {
+
+            var $populationChart = $("#death-chart");
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    var ctx = $populationChart[0].getContext("2d");
+
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Population',
+                                backgroundColor: ['#ff3036','#9ddfe5','#4e4ef8','#ffffae', '#6ef96e','#ff3036','#ffacde', '#046307', '#f9d961', '#005f6a', '#465c47', '#e3cfaa','#f55b1d','#878787','#0c0528'],
+                                data: data.data
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            legend: {
+                                position: 'top',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Causas de Muerte'
+                            }
+                        }
+                    });
+
+                }
+            });
+
+        });
+
+    </script>
+{% endblock %}

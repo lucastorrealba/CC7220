@@ -146,3 +146,25 @@ class CEG(views.View):
     def get(self, request):
         table = q6()
         return render(request, "ceg.html", {"table": table})
+
+
+# RELIGIÓN DE LOS CIENTÍFICOS
+
+def q7(request):
+    labels = []
+    data = []
+    query = Queries.get_rdlc(limit=15)
+    for d in query:
+        if type(d) is dict:
+            labels.append(d['reg']['value'])
+            data.append(d['humans']['value'])
+
+    return JsonResponse(data={
+        'labels': labels,
+        'data': data,
+    })
+
+
+class RDLC(views.View):
+    def get(self, request):
+        return render(request, 'rdlc.html')
