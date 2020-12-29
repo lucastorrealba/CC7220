@@ -89,3 +89,23 @@ class LOC(views.View):
     def get(self, request):
         table = q3()
         return render(request, "loc.html", {"table": table})
+
+
+# cantidad de cientificos por campo de estudio
+def q4(request):
+    labels = []
+    data = []
+    query = Queries.get_ccce(limit=10)
+    for d in query:
+        if type(d) is dict:
+            labels.append(d['subjectname']['value'])
+            data.append(d['count']['value'])
+
+    return JsonResponse(data={
+        'labels': labels,
+        'data': data,
+    })
+
+class CCCE(views.View):
+    def get(self, request):
+        return render(request, "ccce.html")

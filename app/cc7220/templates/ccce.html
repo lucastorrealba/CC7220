@@ -3,10 +3,10 @@
 
 {% block canva %}
     <div class="d-flex justify-content-center">
-        <h3> Scientist By Country </h3>
+        <h3> Científicos por campo de estudio </h3>
     </div>
-    <div id="container" style="width: 75%;">
-        <canvas id="population-chart" data-url="{% url 'cc7220:q1' %}"></canvas>
+    <div class="d-flex justify-content-center" id="container" style="width: 75%;">
+        <canvas id="death-chart" data-url="{% url 'cc7220:q4' %}"></canvas>
     </div>
 {% endblock %}
 
@@ -15,7 +15,7 @@
 
         $(function () {
 
-            var $populationChart = $("#population-chart");
+            var $populationChart = $("#death-chart");
             $.ajax({
                 url: $populationChart.data("url"),
                 success: function (data) {
@@ -23,12 +23,13 @@
                     var ctx = $populationChart[0].getContext("2d");
 
                     new Chart(ctx, {
-                        type: 'bar',
+                        type: 'pie',
                         data: {
                             labels: data.labels,
                             datasets: [{
                                 label: 'Population',
-                                backgroundColor: '#00BFFF',
+                                backgroundColor: ['#4B0082', '#F0E68C', '#5F9EA0', '#2F4F4F', '#FFFAF0',
+                                    '#F08080', '#8FBC8F', '#00CED1', '#B22222', '#8B008B' ],
                                 data: data.data
                             }]
                         },
@@ -39,7 +40,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Científicos por País'
+                                text: 'Fields of Study'
                             }
                         }
                     });

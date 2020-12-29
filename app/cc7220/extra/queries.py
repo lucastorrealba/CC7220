@@ -51,7 +51,7 @@ class Queries:
                             log="ccbc retrieved" if Queries.ccbc_asked else "ccbc asked",
                             already_asked=Queries.ccbc_asked,
                             limit=limit)
-        Queries.ccbc_asked_asked = True
+        Queries.ccbc_asked = True
         return res
 
     # Mayores causas de muerte de los científicos = mcmc
@@ -107,4 +107,33 @@ class Queries:
                             log="loc retrieved" if Queries.loc_asked else "loc asked",
                             already_asked=Queries.loc_asked)
         Queries.loc_asked = True
+        return res
+
+    # cantidad de cientificos por campo de estudio
+    ccce = """SELECT ?subjectname (COUNT(?scientist) as ?count)
+            WHERE {
+            ?scientist  wdt:P31 wd:Q5;
+            (wdt:P106|wdt:P279*) wd:Q901 ;
+            wdt:P800 ?work;
+            wdt:P101 ?field .
+            ?field rdfs:label ?fieldname .
+            ?work wdt:P921 ?subject .
+            ?subject wdt:P31 wd:Q11862829 ;
+            rdfs:label ?subjectname .
+                FILTER (lang(?subjectname)="en") .
+            FILTER (lang(?fieldname)="en") .
+            }
+            group by ?subjectname
+            order by desc(?count)"""
+
+    ccce_asked = False
+
+    @staticmethod
+    def get_ccce(limit=None):
+        res = Queries.query(query=Queries.ccce,
+                            json_path="cc7220/templates/json/q4.json",
+                            log="ccce retrieved" if Queries.ccce_asked else "ccce asked",
+                            already_asked=Queries.ccce_asked,
+                            limit=limit)
+        Queries.ccce_asked = True
         return res

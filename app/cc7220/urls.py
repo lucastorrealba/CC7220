@@ -21,6 +21,12 @@ queries = [
         'q3/',
         views.q3,
         name='q3'
+    ),
+    # cantidad de cientificos por campo de estudio
+    path(
+        'q4/',
+        views.q4,
+        name='q4'
     )
 ]
 
@@ -47,6 +53,12 @@ requests = [
         'loc/',
         views.LOC.as_view(),
         name='loc'
+    ),
+    # cantidad de cientificos por campo de estudio
+    path(
+        'ccce/',
+        views.CCCE.as_view(),
+        name='ccce'
     ),
 ]
 
