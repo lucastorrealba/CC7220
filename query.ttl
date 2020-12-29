@@ -1,0 +1,362 @@
+# QUERY 1
+# nombre del científico - guerra en la que participó
+SELECT ?name ?war
+WHERE{
+  ?scientist (wdt:P106|wdt:P279*) wd:Q901 ;
+             wdt:P607 ?war ;
+             wdt:P27 ?county ;
+      rdfs:label ?name .
+  FILTER (lang(?name)="en")
+  }
+
+
+# QUERY 2
+# nombre del científico - pais - guerra en la que participó
+SELECT DISTINCT ?name ?countryname ?warname
+WHERE {
+  ?scientist wdt:P106 wd:Q901 ;
+             wdt:P607 ?war;
+             wdt:P27 ?country ;
+      rdfs:label ?name .
+  ?war rdfs:label ?warname .
+  ?country rdfs:label ?countryname .
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?warname)="en") .
+  FILTER (lang(?countryname)="en") .
+  }
+
+
+# QUERY 2
+# nombre del científico y muerte causada
+SELECT DISTINCT ?name ?deathname
+WHERE {
+  ?scientist wdt:P106 wd:Q901 ;
+             wdt:P509 ?death ;
+             rdfs:label ?name .
+             MINUS {?scientist wdt:P1196 wd:Q3739104} .
+  ?death rdfs:label ?deathname
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?deathname)="en") .
+  }
+
+
+# QUERY 3
+# cientifico - fecha de nac. - fecha de muerte - genero - ciudadanía (los campos son obligatorios, no opcionales)
+SELECT ?name ?dateOfBirth ?dateOfDeath ?gender ?countryOfCitizenship
+WHERE{
+  ?scientist wdt:P106 wd:Q901 ;
+             wdt:P569 ?dateOfBirth;
+             wdt:P570 ?dateOfDeath;
+             wdt:P21 ?genderId;
+             wdt:P27 ?countryOfCitizenshipId;
+             rdfs:label ?name .
+  ?genderId rdfs:label ?gender .
+  ?countryOfCitizenshipId rdfs:label ?countryOfCitizenship .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?gender)="en")
+  FILTER (lang(?countryOfCitizenship)="en")
+}
+
+
+# QUERY 4
+# nombre del científico - fecha de nacimiento (opcional) - fecha de muerte (opcional)
+SELECT ?scientist ?name ?dateOfBirth ?dateOfDeath 
+WHERE{
+  ?scientist wdt:P106 ?occupation ;
+             rdfs:label ?name .
+  ?occupation wdt:P279* wd:Q901.
+  OPTIONAL{?scientist wdt:P569 ?dateOfBirth.}
+  OPTIONAL{
+  ?scientist
+             wdt:P570 ?dateOfDeath.}
+    FILTER (lang(?name)="en") 
+}
+
+
+# QUERY 5
+# científico y sus trabajos
+SELECT DISTINCT ?name (GROUP_CONCAT(DISTINCT ?work; SEPARATOR=", ") AS ?works) (GROUP_CONCAT(DISTINCT ?topic; SEPARATOR=", ") AS ?topics)
+ WHERE {
+  ?scientist wdt:P106 wd:Q901 ;
+             wdt:P800 ?things;
+             rdfs:label ?name .
+   ?things rdfs:label ?work ;
+           wdt:P921 ?area .
+   ?area rdfs:label ?topic .
+    FILTER (lang(?name)="en") .
+  FILTER (lang(?work)="en") .
+  FILTER (lang(?topic)="en") .
+  }
+GROUP BY ?name
+
+
+# QUERY 6
+# area y tópico del cientifico
+SELECT DISTINCT ?area ?topic (GROUP_CONCAT(DISTINCT ?name; SEPARATOR=",") as ?scientists)
+ WHERE {
+  ?scientist wdt:P106 wd:Q901 ;
+             wdt:P800 ?things;
+             rdfs:label ?name .
+   ?things rdfs:label ?work ;
+           wdt:P921 ?area .
+   ?area rdfs:label ?topic .
+  {SELECT ?scientist1 ?things1
+    WHERE {
+      ?scientist1 wdt:P106 wd:Q901;
+                 wdt:P800 ?things1 .
+      }
+  }
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?work)="en") .
+  FILTER (lang(?topic)="en") .
+  FILTER (?scientist != ?scientist1 && ?things = ?things1)
+  }
+GROUP by ?area ?topic
+
+
+
+# QUERY 7
+# grado (académico) del cientifico
+SELECT ?name ?degreeName
+WHERE{
+  ?scientist wdt:P106 wd:Q901;
+             wdt:P512 ?degree;
+             rdfs:label ?name .
+  ?degree rdfs:label ?degreeName
+  FILTER(lang(?name)="en") .
+  FILTER(lang(?degreeName)="en") .
+}
+
+
+# QUERY 8
+# cientificos cuyos conyuges aportaron al desarrollo de algun trabajo notable
+SELECT DISTINCT ?name ?spousename ?workname
+WHERE {
+  ?occupation wdt:P279* wd:Q901 .
+  ?scientist wdt:P106 ?occupation ;
+             wdt:P26 ?spouse ;
+             wdt:P800 ?work ;
+             rdfs:label ?name .
+  ?work wdt:P50 ?spouse ;
+        rdfs:label ?workname .
+  ?spouse rdfs:label ?spousename .
+  FILTER (lang(?name)="en") 
+  FILTER (lang(?spousename)="en")
+  FILTER (lang(?workname)="en")
+  }
+
+
+# QUERY 9
+# Cantidad de cientificos agrupados por países
+SELECT DISTINCT ?country (COUNT(distinct ?human) as ?number)
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106) wd:Q901 ;
+         wdt:P27 ?nacionality ;
+         rdfs:label ?name .
+  ?nacionality rdfs:label ?country .
+  FILTER (lang(?name)="en") 
+  FILTER (lang(?country)="en")
+  }
+GROUP BY ?country
+ORDER BY DESC(?number)
+
+
+# QUERY 10
+# Cantidad de premios por scientificos
+SELECT ?name (count(?human) as ?awards) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         wdt:P166 ?award;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         rdfs:label ?name .
+  FILTER (lang(?name)="en") 
+  }
+GROUP BY ?name
+ORDER BY DESC(?humans)
+
+
+# QUERY 11
+#cantidad de premios por cientificos agrupados por paises
+SELECT ?country (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         wdt:P166 ?award;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P27 ?nacionality ;
+         rdfs:label ?name .
+  ?nacionality rdfs:label ?country .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?country)="en")
+  }
+GROUP BY ?country
+ORDER BY DESC(?humans)
+
+
+# QUERY 12
+# por religion
+SELECT ?reg (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P140 ?religion ;
+         rdfs:label ?name .
+  ?religion rdfs:label ?reg .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?reg)="en")
+  }
+GROUP BY ?reg
+ORDER BY DESC(?humans)
+
+# QUERY 13
+#cantidad de trabajos notables
+SELECT ?name (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P800 ?work ;
+         rdfs:label ?name .
+  ?work rdfs:label ?w .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?w)="en")
+  }
+GROUP BY ?name
+ORDER BY DESC(?humans)
+
+#QUERY 14
+#cantidad de trabajos notables de miembros (con ocupacion o subclase scientist) de la Royal Society
+SELECT ?name (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P800 ?work ;
+         wdt:P463 wd:Q123885;
+         rdfs:label ?name .
+  ?work rdfs:label ?w .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?w)="en")
+  }
+GROUP BY ?name
+ORDER BY DESC(?humans)
+
+#QUERY 15
+# cantidad de cientificos por universidad
+SELECT ?e (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P69 ?education ;
+         rdfs:label ?name .
+  ?education rdfs:label ?e .
+  FILTER (lang(?name)="en")
+  FILTER (lang(?e)="en")
+  }
+GROUP BY ?e
+ORDER BY DESC(?humans)
+
+
+# QUERY 16
+#paises donde NACIERON los cientificos
+SELECT ?c (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P19 ?placeOfBirth;
+         rdfs:label ?name .
+  ?placeOfBirth wdt:P17 ?country.
+  ?country rdfs:label ?c.
+  FILTER (lang(?name)="en")
+  FILTER (lang(?c)="en")
+  }
+GROUP BY ?c
+ORDER BY DESC(?humans)
+
+# QUERY 17
+#cientificos relacionados por el area de su trabajo
+SELECT DISTINCT ?area ?topic (GROUP_CONCAT(DISTINCT ?name; SEPARATOR=",") as ?scientists)
+ WHERE {
+  ?scientist  wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+             wdt:P800 ?things;
+             rdfs:label ?name .
+   ?things rdfs:label ?work ;
+           wdt:P921 ?area .
+   ?area rdfs:label ?topic .
+  {SELECT ?scientist1 ?things1
+    WHERE {
+      ?scientist1 wdt:P106 wd:Q901;
+                 wdt:P800 ?things1 .
+      }
+  }
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?work)="en") .
+  FILTER (lang(?topic)="en") .
+  FILTER (?scientist != ?scientist1 && ?things = ?things1)
+  }
+GROUP by ?area ?topic
+
+# QUERY 18
+# Mayores causas de muerte de los científicos
+SELECT ?c ?m (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P1196 ?mannerOfDeath;
+         wdt:P509 ?causesOfDeath;
+         rdfs:label ?name .
+  ?causesOfDeath rdfs:label ?c.
+  ?mannerOfDeath rdfs:label ?m.
+  FILTER (lang(?name)="en")
+  FILTER (lang(?c)="en")
+  FILTER (lang(?m)="en")
+  }
+GROUP BY ?m ?c
+ORDER BY DESC(?humans)
+
+
+# QUERY 19 
+# subocupaciones cientificos
+SELECT DISTINCT ?scientific_ocupations ?fields
+WHERE {
+  ?job (wdt:P106|wdt:P279*) ?occupation .
+  ?occupation wdt:P425 ?field ;
+              rdfs:label ?scientific_ocupations .
+  ?field (wdt:P31|wdt:P279*) wd:Q336 ;
+                       rdfs:label ?fields
+  FILTER(lang(?scientific_ocupations)="en") .
+  FILTER(lang(?fields)="en") .
+  }
+
+# QUERY 20
+# cargos ocupados por científicos 
+SELECT ?position (count(?human) as ?humans) 
+WHERE {
+  ?human wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+         wdt:P39 ?positionHeld;
+         rdfs:label ?name .
+  ?positionHeld rdfs:label ?position.
+  FILTER (lang(?name)="en")
+  FILTER (lang(?position)="en")
+  }
+GROUP BY ?position
+ORDER BY DESC(?humans)
+
+# QUERY 21
+# cargos ocupados por científicos (separados por género)
+SELECT ?occupationname ?gender (count(?scientist) as ?human)
+ WHERE {
+  ?scientist  wdt:P31 wd:Q5;
+         (wdt:P106|wdt:P279*) wd:Q901 ;
+             wdt:P106 ?occupation ;
+             wdt:P21 ?genderId;
+             rdfs:label ?name .
+  ?occupation (wdt:P106|wdt:P279*) wd:Q901;
+               rdfs:label ?occupationname .
+  ?genderId rdfs:label ?gender.
+  FILTER (lang(?name)="en") .
+  FILTER (lang(?occupationname)="en") .
+  FILTER (lang(?gender)="en") .
+  }
+GROUP BY ?occupationname ?gender
+ORDER BY DESC(?human)
